@@ -376,40 +376,41 @@ VideoProcess() {
 				fi
 
 				curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file - Nay!"
 
-				if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
-					ffmpeg -y \
-						-i "$videoDownloadPath/${filenamenoext}.mkv" \
-						-c copy \
-						-metadata TITLE="$videoTitle" \
-						-metadata DATE_RELEASE="$videoDate" \
-						-metadata DATE="$videoDate" \
-						-metadata YEAR="$videoYear" \
-						-metadata GENRE="$genre" \
-						-metadata ARTIST="$lidarrArtistName" \
-						-metadata ALBUMARTIST="$lidarrArtistName" \
-						-metadata ENCODED_BY="lidarr-extended" \
-						-attach "$videoDownloadPath/poster.jpg" -metadata:s:t mimetype=image/jpeg \
-						"$videoDownloadPath/$videoFileName" 2>&1 | tee -a "/config/logs/$logFileName"
-					chmod 666 "$videoDownloadPath/$videoFileName"
-				else
-					ffmpeg -y \
-						-i "$videoDownloadPath/${filenamenoext}.mp4" \
-						-c copy \
-						-movflags faststart \
-						-metadata TITLE="$videoTitle" \
-						-metadata DATE_RELEASE="$videoDate" \
-						-metadata DATE="$videoDate" \
-						-metadata YEAR="$videoYear" \
-						-metadata GENRE="$genre" \
-						-metadata ARTIST="$lidarrArtistName" \
-						-metadata ALBUMARTIST="$lidarrArtistName" \
-						-metadata ENCODED_BY="lidarr-extended" \
-						"$videoDownloadPath/$videoFileName" 2>&1 | tee -a "/config/logs/$logFileName"
-					chmod 666 "$videoDownloadPath/$videoFileName"
+				# if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
+				# 	ffmpeg -y \
+				# 		-i "$videoDownloadPath/${filenamenoext}.mkv" \
+				# 		-c copy \
+				# 		-metadata TITLE="$videoTitle" \
+				# 		-metadata DATE_RELEASE="$videoDate" \
+				# 		-metadata DATE="$videoDate" \
+				# 		-metadata YEAR="$videoYear" \
+				# 		-metadata GENRE="$genre" \
+				# 		-metadata ARTIST="$lidarrArtistName" \
+				# 		-metadata ALBUMARTIST="$lidarrArtistName" \
+				# 		-metadata ENCODED_BY="lidarr-extended" \
+				# 		-attach "$videoDownloadPath/poster.jpg" -metadata:s:t mimetype=image/jpeg \
+				# 		"$videoDownloadPath/$videoFileName" 2>&1 | tee -a "/config/logs/$logFileName"
+				# 	chmod 666 "$videoDownloadPath/$videoFileName"
+				# else
+				# 	ffmpeg -y \
+				# 		-i "$videoDownloadPath/${filenamenoext}.mp4" \
+				# 		-c copy \
+				# 		-movflags faststart \
+				# 		-metadata TITLE="$videoTitle" \
+				# 		-metadata DATE_RELEASE="$videoDate" \
+				# 		-metadata DATE="$videoDate" \
+				# 		-metadata YEAR="$videoYear" \
+				# 		-metadata GENRE="$genre" \
+				# 		-metadata ARTIST="$lidarrArtistName" \
+				# 		-metadata ALBUMARTIST="$lidarrArtistName" \
+				# 		-metadata ENCODED_BY="lidarr-extended" \
+				# 		"$videoDownloadPath/$videoFileName" 2>&1 | tee -a "/config/logs/$logFileName"
+				# 	chmod 666 "$videoDownloadPath/$videoFileName"
 
-				fi
+				# fi
+				
 				if [ -f "$videoDownloadPath/$videoFileName" ]; then
 					if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
 						rm "$videoDownloadPath/${filenamenoext}.mkv"
