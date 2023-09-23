@@ -377,7 +377,10 @@ VideoProcess() {
 
 				curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file - Nay!"
-
+				
+				if [ -f "$videoDownloadPath/${filenamenoext}.mp4" ]; then
+					mv "$videoDownloadPath/${filenamenoext}.mp4" "$videoDownloadPath/$videoFileName"
+				fi
 				# if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
 				# 	ffmpeg -y \
 				# 		-i "$videoDownloadPath/${filenamenoext}.mkv" \
