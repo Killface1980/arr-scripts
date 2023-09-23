@@ -352,7 +352,7 @@ VideoProcess() {
 				mv "$file" "$videoDownloadPath/$filename"
 
 				if [ -f "$videoDownloadPath/$filename" ]; then
-					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Download Complete!"
+					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Download Complete! - $filename"
 					chmod 666 "$videoDownloadPath/$filename"
 					downloadFailed=false
 				else
@@ -378,8 +378,8 @@ VideoProcess() {
 				curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file - Nay!"
 				
-				if [ -f "$videoDownloadPath/${filenamenoext}.mp4" ]; then
-					mv "$videoDownloadPath/${filenamenoext}.mp4" "$videoDownloadPath/$videoFileName"
+				if [ -f "$videoDownloadPath/$filename" ]; then
+					mv "$videoDownloadPath/$filename" "$videoDownloadPath/$videoFileName"
 				fi
 				# if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
 				# 	ffmpeg -y \
