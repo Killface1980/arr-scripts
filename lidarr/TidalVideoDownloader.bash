@@ -338,7 +338,7 @@ VideoProcess() {
 				mkdir -p "$videoDownloadPath/incomplete"
 			fi
 
-			downloadFailed=false
+			downloadFailed=true
 			log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Downloading..."
 			tidal-dl -r P1080 -o "$videoDownloadPath/incomplete" -l "$videoUrl" 2>&1 | tee -a "/config/logs/$logFileName"
 			find "$videoDownloadPath/incomplete" -type f -exec mv "{}" "$videoDownloadPath/incomplete"/ \;
@@ -364,6 +364,11 @@ VideoProcess() {
 				if [ "$videoDownloadPath/incomplete" ]; then
 					rm -rf "$videoDownloadPath/incomplete"
 				fi
+				if [ "$downloadFailed" == "true" ]; then
+					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: 	Skipping due to failed download..."
+					continue
+				fi
+
 
 				if python3 /usr/local/sma/manual.py --config "/config/extended/sma-mp4.ini" -i "$videoDownloadPath/$filename" -nt; then
 					sleep 0.01
@@ -424,11 +429,6 @@ VideoProcess() {
 				#	fi
 				#fi
 			done
-
-			if [ "$downloadFailed" == "true" ]; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Skipping due to failed download..."
-				continue
-			fi
 
 			downloadedFileSize=$(stat -c "%s" "$videoDownloadPath/$videoFileName")
 
