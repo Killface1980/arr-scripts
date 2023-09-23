@@ -296,7 +296,7 @@ VideoProcess () {
 				continue
 			fi
 
-			videoFileName="${videoTitleClean}${videoType}.${videocontainer}"
+			videoFileName="${videoTitleClean}${videoType}.mp4"
 			# videoFileName="${videoTitleClean}${videoType}.mkv"
 			existingFileSize=""
 			existingFile=""
