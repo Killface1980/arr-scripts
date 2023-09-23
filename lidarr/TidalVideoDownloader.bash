@@ -274,6 +274,10 @@ VideoProcess() {
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: 4K Upgrade Found - UNWANTED!"
 				continue
 				# videoType="-video"
+			elif echo "$videoTitle" | grep -i "official" | grep -i "animated" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Animated - UNWANTED!"
+				continue
+				# videoType="-video"
 			elif echo "$videoTitle" | grep -i "official" | grep -i "video" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Music Video Match Found!"
 				videoType="-video"
