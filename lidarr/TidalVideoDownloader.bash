@@ -396,12 +396,12 @@ VideoProcess() {
 				else
 					ffmpeg -y \
 						-i "$videoDownloadPath/${filenamenoext}.mp4" \
-						-i "$videoDownloadPath/poster.jpg" \
+						#-i "$videoDownloadPath/poster.jpg" \
 		                -map 1 \
 		                -map 0 \
 						-c copy \
 						-c:v:0 mjpeg \
-						-disposition:0 attached_pic \
+						#-disposition:0 attached_pic \
 						-movflags faststart \
 						-metadata TITLE="$videoTitle" \
 						-metadata DATE_RELEASE="$videoDate" \
