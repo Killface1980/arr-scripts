@@ -477,10 +477,10 @@ VideoProcess() {
 				videoArtistType=$(echo "$videoArtistData" | jq -r .type)
 				echo "	<artist>$videoArtistName</artist>" >>"$nfo"
 			done
-			echo "	<albumArtistCredits>" >>"$nfo"
-			echo "		<artist>$lidarrArtistName</artist>" >>"$nfo"
-			echo "		<musicBrainzArtistID>$lidarrArtistMusicbrainzId</musicBrainzArtistID>" >>"$nfo"
-			echo "	</albumArtistCredits>" >>"$nfo"
+			#echo "	<albumArtistCredits>" >>"$nfo"
+			#echo "		<artist>$lidarrArtistName</artist>" >>"$nfo"
+			#echo "		<musicBrainzArtistID>$lidarrArtistMusicbrainzId</musicBrainzArtistID>" >>"$nfo"
+			#echo "	</albumArtistCredits>" >>"$nfo"
 			echo "	<thumb>${videoTitleClean}${videoType}.jpg</thumb>" >>"$nfo"
 			echo "	<source>tidal</source>" >>"$nfo"
 			echo "</musicvideo>" >>"$nfo"
