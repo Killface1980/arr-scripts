@@ -299,7 +299,7 @@ VideoProcess() {
 			existingFile=""
 
 			if [ -d "$videoPath/$lidarrArtistFolderNoDisambig" ]; then
-				existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoFileName}")"
+				existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.mp4")"
 				existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.nfo")"
 				existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.jpg")"
 			fi
