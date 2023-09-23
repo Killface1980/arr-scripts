@@ -414,15 +414,15 @@ VideoProcess() {
 
 				# fi
 				
-				if [ -f "$videoDownloadPath/$videoFileName" ]; then
-					if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
-						rm "$videoDownloadPath/${filenamenoext}.mkv"
-					else
-						if [ -f "$videoDownloadPath/${filenamenoext}.mp4" ]; then
-							rm "$videoDownloadPath/${filenamenoext}.mp4"
-						fi
-					fi
-				fi
+				#if [ -f "$videoDownloadPath/$videoFileName" ]; then
+				#	if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
+				#		rm "$videoDownloadPath/${filenamenoext}.mkv"
+				#	else
+				#		if [ -f "$videoDownloadPath/${filenamenoext}.mp4" ]; then
+				#			rm "$videoDownloadPath/${filenamenoext}.mp4"
+				#		fi
+				#	fi
+				#fi
 			done
 
 			if [ "$downloadFailed" == "true" ]; then
