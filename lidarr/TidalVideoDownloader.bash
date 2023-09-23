@@ -365,7 +365,7 @@ VideoProcess() {
 					rm -rf "$videoDownloadPath/incomplete"
 				fi
 
-				if python3 /usr/local/sma/manual.py --config "/config/extended/sma.ini" -i "$videoDownloadPath/$filename" -nt; then
+				if python3 /usr/local/sma/manual.py --config "/config/extended/sma-mp4.ini" -i "$videoDownloadPath/$filename" -nt; then
 					sleep 0.01
 					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Processed with SMA..."
 					rm /usr/local/sma/config/*log*
@@ -397,14 +397,20 @@ VideoProcess() {
 					ffmpeg -y \
 						-i "$videoDownloadPath/${filenamenoext}.mp4" \
 						-i "$videoDownloadPath/poster.jpg" \
+		                -map 1 \
+		                -map 0 \
 						-c copy \
 						-c:v:0 mjpeg \
 						-disposition:0 attached_pic \
 						-movflags faststart \
 						-metadata TITLE="$videoTitle" \
+						-metadata DATE_RELEASE="$videoDate" \
 						-metadata DATE="$videoDate" \
+						-metadata YEAR="$videoYear" \
 						-metadata GENRE="$genre" \
 						-metadata ARTIST="$lidarrArtistName" \
+						-metadata ALBUMARTIST="$lidarrArtistName" \
+						-metadata ENCODED_BY="lidarr-extended" \
 						"$videoDownloadPath/$videoFileName" 2>&1 | tee -a "/config/logs/$logFileName"
 					chmod 666 "$videoDownloadPath/$videoFileName"
 
