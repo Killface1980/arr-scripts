@@ -8,7 +8,8 @@ source /config/extended.conf
 source /config/extended/functions
 
 verifyConfig () {
-    videoContainer=mkv
+    # videoContainer=mkv
+    videoContainer=mp4
 
 	if [ "$enableVideo" != "true" ]; then
 		log "Script is not enabled, enable by setting enableVideo to \"true\" by modifying the \"/config/extended.conf\" config file..."

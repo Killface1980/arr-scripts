@@ -9,7 +9,8 @@ source /config/extended/functions
 
 
 verifyConfig () {
-    videoContainer=mkv
+    videoContainer=mp4
+    # videoContainer=mkv
 
 	if [ "$enableVideo" != "true" ]; then
 		log "Script is not enabled, enable by setting enableVideo to \"true\" by modifying the \"/config/extended.conf\" config file..."
@@ -266,16 +267,26 @@ VideoProcess () {
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Music Video Match Found!"
 				videoType="-video"
 			elif echo "$videoTitle" | grep -i "official" | grep -i "lyric" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
-				videoType="-lyrics"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found - UNWANTED!!!"
+				continue
+				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
+				# videoType="-lyrics"
 			elif echo "$videoTitle" | grep -i "video" | grep -i "lyric" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
-				videoType="-lyrics"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Simple Lyric Video Match Found - UNWANTED!!!"
+				continue
+				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
+				# videoType="-lyrics"
 			elif echo "$videoTitle" | grep -i "4k upgrade" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: 4K Upgrade Found!"
-				videoType="-video" 
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: 4K Upgrade Found - UNWANTED!"
+				continue
+				# videoType="-video" 
 			elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found!"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found - UNWANTED!"
+				continue
+				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found!"
+				# videoType="-live"
+			elif echo "$videoTitle" | grep -i "\(.*unplugged.*\)" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Unplugged Video Found!"
 				videoType="-live"
 			elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
@@ -285,7 +296,8 @@ VideoProcess () {
 				continue
 			fi
 
-			videoFileName="${videoTitleClean}${videoType}.mkv"
+			videoFileName="${videoTitleClean}${videoType}.${videocontainer}"
+			# videoFileName="${videoTitleClean}${videoType}.mkv"
 			existingFileSize=""
 			existingFile=""
 
@@ -368,10 +380,11 @@ VideoProcess () {
 					rm "$videoDownloadPath/$filename"
 					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: INFO: deleted: $filename"
 				fi
+				
+				curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file"
 
 				if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
-					curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
-					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file"
 					ffmpeg -y \
 						-i "$videoDownloadPath/${filenamenoext}.mkv" \
 						-c copy \
@@ -386,10 +399,27 @@ VideoProcess () {
 						-attach "$videoDownloadPath/poster.jpg" -metadata:s:t mimetype=image/jpeg \
 						"$videoDownloadPath/$videoFileName"  2>&1 | tee -a "/config/logs/$logFileName"
 					chmod 666 "$videoDownloadPath/$videoFileName"
+				else
+					ffmpeg -y \
+						-i "$videoDownloadPath/${filenamenoext}.mp4" \
+						-i "$videoDownloadPath/poster.jpg" \
+						-c copy \
+						-c:v:0 mjpeg \
+						-disposition:0 attached_pic \
+						-movflags faststart \
+						-metadata TITLE="$videoTitle" \
+						-metadata DATE="$videoDate" \
+						-metadata GENRE="$genre" \
+						-metadata ARTIST="$lidarrArtistName" \
+						"$videoDownloadPath/$videoFileName"  2>&1 | tee -a "/config/logs/$logFileName"
+					chmod 666 "$videoDownloadPath/$videoFileName"
+
 				fi
 				if [ -f "$videoDownloadPath/$videoFileName" ]; then
 					if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
 						rm "$videoDownloadPath/${filenamenoext}.mkv"
+					else if [ -f "$videoDownloadPath/${filenamenoext}.mp4" ]; then
+						rm "$videoDownloadPath/${filenamenoext}.mp4"
 					fi
 				fi
 			done
