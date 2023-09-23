@@ -260,16 +260,13 @@ VideoProcess() {
 			videoType=""
 			log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Processing..."
 
-			if echo "$videoTitle" | grep -i "official" | grep -i "video" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Music Video Match Found!"
-				videoType="-video"
-			elif echo "$videoTitle" | grep -i "official" | grep -i "lyric" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found - UNWANTED!!!"
+			if echo "$videoTitle" | grep -i "video" | grep -i "lyric" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Simple Lyric Video Match Found - UNWANTED!!!"
 				continue
 				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
 				# videoType="-lyrics"
-			elif echo "$videoTitle" | grep -i "video" | grep -i "lyric" | read; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Simple Lyric Video Match Found - UNWANTED!!!"
+			elif echo "$videoTitle" | grep -i "official" | grep -i "lyric" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found - UNWANTED!!!"
 				continue
 				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Lyric Video Match Found!"
 				# videoType="-lyrics"
@@ -280,6 +277,9 @@ VideoProcess() {
 			elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found - UNWANTED!"
 				continue
+			elif echo "$videoTitle" | grep -i "official" | grep -i "video" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Music Video Match Found!"
+				videoType="-video"
 				# log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found!"
 				# videoType="-live"
 			elif echo "$videoTitle" | grep -i "\(.*unplugged.*\)" | read; then
