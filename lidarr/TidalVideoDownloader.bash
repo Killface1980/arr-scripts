@@ -277,6 +277,9 @@ VideoProcess() {
 			elif echo "$videoTitle" | grep -i "official" | grep -i "animated" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Animated - UNWANTED!"
 				continue
+			elif echo "$videoTitle" | grep -i "official" | grep -i "behind the scenes" | read; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Behind the scenes - UNWANTED!"
+				continue
 				# videoType="-video"
 			elif echo "$videoTitle" | grep -i "official" | grep -i "video" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official Music Video Match Found!"
@@ -290,7 +293,9 @@ VideoProcess() {
 			#elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found - UNWANTED!"
 				continue
-			elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
+			# Ignore cases, apostrphe / accent
+			elif echo "$lidarrArtistTrackData" | grep -P -i "[\p{L}\p{M}']*$(echo -n "$videoTitle" | perl -CS -MUnicode::Normalize -e 'print NFC(<STDIN>)')" | read; then
+			#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video"
 			else
@@ -303,30 +308,27 @@ VideoProcess() {
 			existingFileSize=""
 			existingFile=""
 
-			existingFileSize_legacy=""
-			existingFile_legacy=""
-			existingFileNfo_legacy=""
-			existingFileJpg_legacy=""
-
 			if [ -d "$videoPath/$lidarrArtistFolderNoDisambig" ]; then
 			    # Search for files with the exact title first
 			    existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.mp4")"
 			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.nfo")"
 			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.jpg")"
 
-			        cleanTitleWithoutOfficial="${videoTitleClean%% (Official Video)}"
-			        existingFile_legacy="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.mp4")"
-			        existingFileNfo_legacy="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.nfo")"
-			        existingFileJpg_legacy="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.jpg")"
-
 			    # If not found, search for files with " (Official Video)" removed from the title
 			    if [ -z "$existingFile" ]; then
+			        cleanTitleWithoutOfficial="${videoTitleClean%% (Official Video)}"
+			        existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.mp4")"
+			        existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.nfo")"
+			        existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.jpg")"
 
 					videoFileName="${cleanTitleWithoutOfficial}${videoType}.mp4"
 			    fi
 			fi
 
 
+			if [ -f "$existingFile" ]; then
+				existingFileSize=$(stat -c "%s" "$existingFile")
+			fi
 
 			if [ -f "/config/extended/logs/tidal-video/$id" ]; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Previously Downloaded"
@@ -450,29 +452,6 @@ VideoProcess() {
 				#	fi
 				#fi
 			done
-			if [ -f "$existingFile" ]; then
-				existingFileSize=$(stat -c "%s" "$existingFile")
-			fi
-
-			if [ -f "$existingFile_legacy" ]; then
-				existingFileSize_legacy=$(stat -c "%s" "$existingFile_legacy")
-			fi
-			if [ -f "$existingFile" && -f "$existingFile_legacy"]; then
-				if [ $existingFile -gt $existingFile_legacy ]; then
-					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Official video VS unmarked ($existingFile -lt $existingFile_legacy), deleting..."
-					rm  "$existingFile_legacy"
-					rm  "$existingFileNfo_legacy"
-					rm  "$existingFileJpg_legacy"
-				else if ![ -f "$existingFile" ]; then  
-					existingFile = "$existingFile_legacy"
-					existingFileNfo = "$existingFileNfo_legacy"
-					existingFileJpg = "$existingFileJpg_legacy"
-
-				fi
-
-
-			fi
-
 
 			downloadedFileSize=$(stat -c "%s" "$videoDownloadPath/$videoFileName")
 
