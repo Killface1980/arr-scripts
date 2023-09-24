@@ -246,6 +246,7 @@ VideoProcess() {
 			videoTitle=$(echo $videoData | jq -r .title)
 			videoTitleClean="$(echo "$videoTitle" | sed 's%/%-%g')"
 			videoTitleClean="$(echo "$videoTitleClean" | sed -e "s/[:alpha:][:digit:]._' -/ /g" -e "s/  */ /g" | sed 's/^[.]*//' | sed 's/[.]*$//g' | sed 's/^ *//g' | sed 's/ *$//g')"
+			videoTitleCleanFileName="$(echo "$videoTitleClean" | sed 's/[^a-zA-Z0-9._-]/ /g')"
 			videoExplicit=$(echo $videoData | jq -r .explicit)
 			videoUrl="https://tidal.com/browse/video/$id"
 			videoDate="$(echo "$videoData" | jq -r ".releaseDate")"
@@ -303,23 +304,35 @@ VideoProcess() {
 				continue
 			fi
 
-			videoFileName="${videoTitleClean}${videoType}.mp4"
+			# videoFileName_legacy="${videoTitleClean}${videoType}.mp4"
+
+			videoFileName="${videoTitleCleanFileName}${videoType}.mp4"
+
 			# videoFileName="${videoTitleClean}${videoType}.mkv"
 			existingFileSize=""
 			existingFile=""
 
 			if [ -d "$videoPath/$lidarrArtistFolderNoDisambig" ]; then
-			    # Search for files with the exact title first
+
 			    existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.mp4")"
 			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.nfo")"
 			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.jpg")"
 
+			    if [ -f "$existingFile" ]; then
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) ::Messed up file names found, deleting..."
+					rm "$existingFile"
+					rm "$existingFileNfo"
+					rm "$existingFileJpg"
+				fi
+
+			    # Search for files with the exact title first
+			    existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.mp4")"
+			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.nfo")"
+			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.jpg")"
+
 			    # If not found, search for files with " (Official Video)" removed from the title
 			    if [ -z "$existingFile" ]; then
-			        cleanTitleWithoutOfficial="${videoTitleClean%% (Official Video)}"
-			        existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.mp4")"
-			        existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.nfo")"
-			        existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.jpg")"
+
 
 			    fi
 			fi
@@ -476,7 +489,7 @@ VideoProcess() {
 			fi
 
 			log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Writing NFO"
-			nfo="$videoDownloadPath/${videoTitleClean}${videoType}.nfo"
+			nfo="$videoDownloadPath/${videoTitleCleanFileName}${videoType}.nfo"
 			if [ -f "$nfo" ]; then
 				rm "$nfo"
 			fi
@@ -503,7 +516,7 @@ VideoProcess() {
 			#echo "		<artist>$lidarrArtistName</artist>" >>"$nfo"
 			#echo "		<musicBrainzArtistID>$lidarrArtistMusicbrainzId</musicBrainzArtistID>" >>"$nfo"
 			#echo "	</albumArtistCredits>" >>"$nfo"
-			echo "	<thumb>${videoTitleClean}${videoType}.jpg</thumb>" >>"$nfo"
+			echo "	<thumb>${videoTitleCleanFileName}${videoType}.jpg</thumb>" >>"$nfo"
 			echo "	<source>tidal</source>" >>"$nfo"
 			echo "</musicvideo>" >>"$nfo"
 			tidy -w 2000 -i -m -xml "$nfo" &>/dev/null
@@ -525,8 +538,8 @@ VideoProcess() {
 						rm "$existingFileNfo"
 					fi
 					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Moving video nfo to final destination"
-					mv "$nfo" "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleClean}${videoType}.nfo"
-					chmod 666 "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleClean}${videoType}.nfo"
+					mv "$nfo" "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleCleanFileName}${videoType}.nfo"
+					chmod 666 "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleCleanFileName}${videoType}.nfo"
 				fi
 
 				if [ -f "$videoDownloadPath/poster.jpg" ]; then
@@ -535,8 +548,8 @@ VideoProcess() {
 						rm "$existingFileJpg"
 					fi
 					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Moving video poster to final destination"
-					mv "$videoDownloadPath/poster.jpg" "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleClean}${videoType}.jpg"
-					chmod 666 "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleClean}${videoType}.jpg"
+					mv "$videoDownloadPath/poster.jpg" "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleCleanFileName}${videoType}.jpg"
+					chmod 666 "$videoPath/$lidarrArtistFolderNoDisambig/${videoTitleCleanFileName}${videoType}.jpg"
 				fi
 			fi
 
