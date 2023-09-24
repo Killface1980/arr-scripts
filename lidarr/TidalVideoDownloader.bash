@@ -261,6 +261,10 @@ VideoProcess() {
 			videoType=""
 			log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Processing..."
 
+			# Normalisierte Versionen von videoTitle und lidarrArtistTrackData erstellen
+			normalizedVideoTitle=$(normalize_string "$videoTitle")
+			normalizedLidarrArtistTrackData=$(normalize_string "$lidarrArtistTrackData")
+
 			if echo "$videoTitle" | grep -i "video" | grep -i "lyric" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Simple Lyric Video Match Found - UNWANTED!!!"
 				continue
@@ -290,7 +294,7 @@ VideoProcess() {
 			elif echo "$videoTitle" | grep -i "\(.*unplugged.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Unplugged Video Found!"
 				videoType="-live"
-			elif echo "$lidarrArtistTrackData" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]')" | read; then
+			elif [[ "$normalizedLidarrArtistTrackData" == *"$normalizedVideoTitle"* ]]; then
 				#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video"
@@ -300,7 +304,7 @@ VideoProcess() {
 				continue
 			# Ignore cases, apostrphe / accent
 			else
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: ERROR :: Unable to match!"
+				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: ERROR :: Unable to match! - $normalizedLidarrArtistTrackData - $normalizedVideoTitle"
 				continue
 			fi
 
@@ -558,6 +562,10 @@ VideoProcess() {
 			chmod 666 "/config/extended/logs/tidal-video/$id"
 		done
 	done
+}
+# Funktion zur Bereinigung und Normalisierung einer Zeichenkette
+normalize_string() {
+  echo "$1" | tr '[:upper:]' '[:lower:]' | tr -d -C '[:alnum:]' | sed 's/ \+$//'
 }
 
 log "Starting Script...."
