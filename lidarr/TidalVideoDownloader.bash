@@ -290,7 +290,7 @@ VideoProcess() {
 			elif echo "$videoTitle" | grep -i "\(.*unplugged.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Unplugged Video Found!"
 				videoType="-live"
-			elif echo "$lidarrArtistTrackData" | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr '[:upper:]' '[:lower:]')" | read; then
+			elif echo "$lidarrArtistTrackData" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]')" | read; then
 				#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video"
