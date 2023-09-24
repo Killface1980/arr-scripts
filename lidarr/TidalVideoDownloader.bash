@@ -291,11 +291,11 @@ VideoProcess() {
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Unplugged Video Found!"
 				videoType="-live"
 			elif echo "$lidarrArtistTrackData" | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr '[:upper:]' '[:lower:]')" | read; then
-			#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
+				#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video"
 			elif echo "$videoTitle" | grep -i "\blive\b" | read; then
-			#elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
+				#elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found - UNWANTED!"
 				continue
 			# Ignore cases, apostrphe / accent
@@ -314,24 +314,26 @@ VideoProcess() {
 
 			if [ -d "$videoPath/$lidarrArtistFolderNoDisambig" ]; then
 
-			    existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.mp4")"
-			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.nfo")"
-			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.jpg")"
+				existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.mp4")"
+				existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.nfo")"
+				existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleClean}${videoType}.jpg")"
 
-			    if [ -f "$existingFile" ]; then
-				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) ::Messed up file names found, deleting..."
-					rm "$existingFile"
-					rm "$existingFileNfo"
-					rm "$existingFileJpg"
+				if ["${videoTitleClean}" != "${videoTitleCleanFileName}"]; then
+					if [ -f "$existingFile" ]; then
+						log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) ::Messed up file names found, deleting: $existingFile"
+						rm "$existingFile"
+						rm "$existingFileNfo"
+						rm "$existingFileJpg"
+					else
+						existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.mp4")"
+						existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.nfo")"
+						existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.jpg")"
+					fi
 				fi
 
-			    # Search for files with the exact title first
-			    existingFile="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.mp4")"
-			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.nfo")"
-			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.jpg")"
+				# Search for files with the exact title first
 
 			fi
-
 
 			if [ -f "$existingFile" ]; then
 				existingFileSize=$(stat -c "%s" "$existingFile")
@@ -399,7 +401,6 @@ VideoProcess() {
 					continue
 				fi
 
-
 				if python3 /usr/local/sma/manual.py --config "/config/extended/sma-mp4.ini" -i "$videoDownloadPath/$filename" -nt; then
 					sleep 0.01
 					log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Processed with SMA..."
@@ -412,7 +413,7 @@ VideoProcess() {
 
 				curl -s "$videoThumbnailUrl" -o "$videoDownloadPath/poster.jpg"
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Tagging file - Nay!"
-				
+
 				if [ -f "$videoDownloadPath/$filename" ]; then
 					mv "$videoDownloadPath/$filename" "$videoDownloadPath/$videoFileName"
 				fi
@@ -448,7 +449,7 @@ VideoProcess() {
 				# 	chmod 666 "$videoDownloadPath/$videoFileName"
 
 				# fi
-				
+
 				#if [ -f "$videoDownloadPath/$videoFileName" ]; then
 				#	if [ -f "$videoDownloadPath/${filenamenoext}.mkv" ]; then
 				#		rm "$videoDownloadPath/${filenamenoext}.mkv"
