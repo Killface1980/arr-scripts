@@ -294,7 +294,7 @@ VideoProcess() {
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found - UNWANTED!"
 				continue
 			# Ignore cases, apostrphe / accent
-			elif echo "$lidarrArtistTrackData" | grep -P -i "[\p{L}\p{M}']*$(echo -n "$videoTitle" | perl -CS -MUnicode::Normalize -e 'print NFC(<STDIN>)')" | read; then
+			elif echo "$lidarrArtistTrackData" | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr '[:upper:]' '[:lower:]')" | read; then
 			#elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video"
