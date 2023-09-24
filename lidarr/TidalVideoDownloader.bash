@@ -321,7 +321,6 @@ VideoProcess() {
 			        existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.nfo")"
 			        existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${cleanTitleWithoutOfficial}${videoType}.jpg")"
 
-					videoFileName="${cleanTitleWithoutOfficial}${videoType}.mp4"
 			    fi
 			fi
 
