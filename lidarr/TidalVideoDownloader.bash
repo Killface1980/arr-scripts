@@ -330,11 +330,6 @@ VideoProcess() {
 			    existingFileNfo="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.nfo")"
 			    existingFileJpg="$(find "$videoPath/$lidarrArtistFolderNoDisambig" -type f -iname "${videoTitleCleanFileName}${videoType}.jpg")"
 
-			    # If not found, search for files with " (Official Video)" removed from the title
-			    if [ -z "$existingFile" ]; then
-
-
-			    fi
 			fi
 
 
