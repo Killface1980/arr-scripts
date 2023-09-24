@@ -277,7 +277,7 @@ VideoProcess () {
 			elif echo "$videoTitle" | grep -i "\(.*live.*\)" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Live Video Found!"
 				videoType="-live"
-			elif echo $lidarrArtistTrackData | grep -i "$videoTitle" | read; then
+			elif echo "$lidarrArtistTrackData" | tr '[:upper:]' '[:lower:]' | grep -i "$(echo -n "$videoTitle" | tr '[:upper:]' '[:lower:]')" | read; then
 				log "$processCount/$lidarrArtistCount :: $lidarrArtistName :: $tidalVideoProcessNumber/$tidalVideoIdsCount :: $videoTitle ($id) :: Music Video Track Name Match Found!"
 				videoType="-video" 
 			else
